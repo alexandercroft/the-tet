@@ -14,7 +14,7 @@ your folder. No accounts, no ads, runs entirely on your machine.
 
 <br>
 
-<img src="assets/preview.png" alt="The TET interface" width="840">
+<img src="assets/preview.jpg" alt="The TET interface" width="840">
 
 </div>
 
