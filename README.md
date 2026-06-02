@@ -178,6 +178,14 @@ the-tet/
 - **Frontend:** vanilla HTML/CSS/JS, no framework, no build step
 - **Engines:** yt-dlp · gallery-dl · Playwright · requests
 
+## Inspired by ReClip
+
+The TET is a spiritual successor to [ReClip](https://github.com/averygan/reclip) —
+the same "paste a link, run it on localhost" idea, expanded to more sources and
+saving straight to a folder. If you're looking for a **self-hosted media /
+video / reels downloader** for **YouTube, TikTok, Instagram, Threads or
+Telegram**, this is for you.
+
 ## Disclaimer
 
 For personal use only. Respect copyright and the terms of service of the
