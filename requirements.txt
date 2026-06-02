@@ -1,0 +1,6 @@
+flask
+yt-dlp
+gallery-dl
+requests
+browser-cookie3
+playwright
