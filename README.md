@@ -114,6 +114,21 @@ python app.py
 
 You can queue several links one after another — each gets its own card.
 
+### Command line
+
+Prefer the terminal? The same engines are available via a CLI:
+
+```bash
+source venv/bin/activate
+python cli.py "https://www.youtube.com/watch?v=…"      # auto-detects source
+python cli.py "https://t.me/channel/123"               # telegram
+python cli.py "https://example.com/file.pdf"           # direct file
+python cli.py "<url>" --audio                           # mp3 for video sources
+python cli.py "<url>" -o ~/Movies                       # custom output folder
+```
+
+It prints the saved file paths to stdout.
+
 ## Configuration
 
 All settings are environment variables:
