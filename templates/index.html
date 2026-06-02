@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>THE TET // UNIVERSAL MEDIA EXTRACTOR</title>
+<link rel="icon" type="image/png" href="{{ logo }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -32,7 +33,6 @@
   .vframe i.tr{top:0;right:0;border-left:0;border-bottom:0}
   .vframe i.bl{bottom:0;left:0;border-right:0;border-top:0}
   .vframe i.br{bottom:0;right:0;border-left:0;border-top:0}
-  .vframe i.tr::after{content:'';position:absolute;top:-2px;right:-2px;width:9px;height:9px;background:var(--red)}
   .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:28px 38px 80px}
   .topbar{display:flex;align-items:center;gap:18px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;
     text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:9px}
@@ -132,10 +132,11 @@
       <div class="detect">
         <span class="lbl">SOURCE //</span>
         <span class="chip" data-src="video">VIDEO</span>
+        <span class="chip" data-src="youtube">YOUTUBE</span>
+        <span class="chip" data-src="tiktok">TIKTOK</span>
         <span class="chip" data-src="instagram">INSTAGRAM</span>
         <span class="chip" data-src="threads">THREADS</span>
         <span class="chip" data-src="telegram">TELEGRAM</span>
-        <span class="chip" data-src="file">FILE</span>
       </div>
     </div>
 
@@ -172,6 +173,8 @@ function detect(url){
   if(u.includes('threads.com')||u.includes('threads.net')) return 'threads';
   if(u.includes('instagram.com')||u.includes('instagr.am')) return 'instagram';
   if(u.includes('t.me/')||u.includes('telegram.me/')) return 'telegram';
+  if(u.includes('youtube.com')||u.includes('youtu.be')) return 'youtube';
+  if(u.includes('tiktok.com')) return 'tiktok';
   if(VIDEO_HOSTS.some(h=>u.includes(h))) return 'video';
   if(FILE_EXT.test(u.split('?')[0])) return 'file';
   return 'video';
