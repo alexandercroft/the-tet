@@ -40,7 +40,7 @@ your folder. No accounts, no ads, runs entirely on your machine.
 | Source | What it grabs | Engine |
 |--------|---------------|--------|
 | **Video** | YouTube, TikTok, X/Twitter, Vimeo, Reddit, Facebook, Twitch, Instagram **Reels**, and [1000+ other sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) | [yt-dlp](https://github.com/yt-dlp/yt-dlp) |
-| **Instagram** | Posts, carousels, photos, reels | [gallery-dl](https://github.com/mikf/gallery-dl) |
+| **Instagram** | Reels, posts, carousels, photos | [yt-dlp](https://github.com/yt-dlp/yt-dlp) (public reels/videos, no login) → [gallery-dl](https://github.com/mikf/gallery-dl) fallback |
 | **Threads** | Post videos and images | headless Chromium via [Playwright](https://playwright.dev/python/) |
 | **Telegram** | Media from **public** channel posts (video + photos) | built-in `t.me` embed scraper |
 | **File** | Any direct file URL — `.mp4`, `.pdf`, `.zip`, `.jpg`, … | streamed HTTP download |
@@ -148,10 +148,10 @@ TET_OUTPUT="$HOME/Movies/TET" TET_CHROME_PROFILE="Default" ./run.sh
 The TET reads cookies from your local **Chrome** so it can fetch content that
 requires being signed in.
 
-- **Instagram requires an active Instagram login.** Instagram serves almost
-  nothing to logged-out visitors, so you must be **signed into Instagram in
-  Chrome**. If you're not logged in, downloads fail with a redirect to the login
-  page.
+- **Instagram public reels/videos work without any login** (handled by yt-dlp).
+  Login is only needed for **private posts** and for the **gallery-dl fallback**
+  (multi-image carousels / photo posts). To enable it, sign into Instagram in
+  Chrome.
 - If your session lives in a **non-default Chrome profile**, point
   `TET_CHROME_PROFILE` at it (e.g. `"Profile 1"`).
 - **Threads** public posts work via headless rendering; being logged in helps
@@ -162,7 +162,7 @@ requires being signed in.
 
 | Symptom | Fix |
 |---------|-----|
-| Instagram → "redirect to login page" | Log into Instagram in Chrome; set `TET_CHROME_PROFILE` if needed |
+| Instagram private/carousel fails | Public reels/videos need no login; for private posts or photo carousels, log into Instagram in Chrome (set `TET_CHROME_PROFILE` if needed) |
 | Threads → "No media found" | The post may be private, or Chromium isn't installed (`python -m playwright install chromium`) |
 | `ffmpeg not found` | `brew install ffmpeg` |
 | Video download fails | Update yt-dlp: `pip install -U yt-dlp` |
@@ -177,7 +177,7 @@ the-tet/
 │   ├── detect.py       # URL → engine
 │   ├── common.py       # output dir, cookies, filename/move helpers
 │   ├── video.py        # yt-dlp
-│   ├── instagram.py    # gallery-dl
+│   ├── instagram.py    # yt-dlp (public) + gallery-dl fallback
 │   ├── threads.py      # Playwright
 │   ├── telegram.py     # t.me embed scraper
 │   ├── file.py         # direct HTTP download
