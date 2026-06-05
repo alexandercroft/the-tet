@@ -6,11 +6,25 @@ multi-image carousels and login-gated content, but needs an Instagram session in
 Chrome. This order means a logged-out user still gets public reels/videos.
 """
 import os
+import shutil
 import subprocess
 
 import yt_dlp
 
 from .common import USER_AGENT, chrome_cli_spec, ydl_cookiesfrombrowser
+
+
+def _reset(workdir: str) -> None:
+    """Drop any partial leftovers so a failed attempt can't cause duplicates."""
+    for name in os.listdir(workdir):
+        path = os.path.join(workdir, name)
+        if os.path.isdir(path):
+            shutil.rmtree(path, ignore_errors=True)
+        else:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
 
 
 def _ytdlp(url: str, workdir: str, job: dict, use_cookies: bool) -> list[str]:
@@ -55,9 +69,12 @@ def _gallery_dl(url: str, workdir: str, with_cookies: bool) -> list[str]:
 def run(url: str, workdir: str, job: dict, opts: dict) -> list[str]:
     job["progress"] = None
 
+    # Each method runs at most once and only if the previous yielded nothing,
+    # so the media is downloaded a single time (no duplicates).
     # 1) yt-dlp — public reels/videos work with no login (the common case);
     #    retry with cookies for login-gated content if the first try is empty.
     for use_cookies in (False, True):
+        _reset(workdir)
         try:
             files = _ytdlp(url, workdir, job, use_cookies)
             if files:
@@ -68,6 +85,7 @@ def run(url: str, workdir: str, job: dict, opts: dict) -> list[str]:
 
     # 2) gallery-dl fallback — best for multi-image carousels / when signed in.
     for with_cookies in (True, False):
+        _reset(workdir)
         files = _gallery_dl(url, workdir, with_cookies)
         if files:
             job["progress"] = 100
