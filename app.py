@@ -9,7 +9,7 @@ import uuid
 from flask import Flask, jsonify, render_template, request
 
 from tet import detect as detect_mod, file, instagram, telegram, threads, video
-from tet.common import OUTPUT_DIR, move_to_output
+from tet.common import OUTPUT_DIR, ensure_h264, move_to_output
 from tet.logo import LOGO_DATA_URI
 
 ENGINES = {
@@ -33,6 +33,7 @@ def run_job(job_id: str, url: str, source: str, opts: dict):
         produced = ENGINES[source](url, workdir, job, opts)
         if not produced:
             raise RuntimeError("Nothing was downloaded")
+        ensure_h264(produced, job)  # any non-h264 (VP9/AV1) → h264 so it plays on Apple
         final = move_to_output(workdir, OUTPUT_DIR)
         job["files"] = [os.path.basename(p) for p in final]
         job["paths"] = final

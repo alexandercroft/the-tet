@@ -6,25 +6,17 @@ multi-image carousels and login-gated content, but needs an Instagram session in
 Chrome. This order means a logged-out user still gets public reels/videos.
 """
 import os
-import shutil
 import subprocess
 
 import yt_dlp
 
-from .common import USER_AGENT, chrome_cli_spec, ydl_cookiesfrombrowser
-
-
-def _reset(workdir: str) -> None:
-    """Drop any partial leftovers so a failed attempt can't cause duplicates."""
-    for name in os.listdir(workdir):
-        path = os.path.join(workdir, name)
-        if os.path.isdir(path):
-            shutil.rmtree(path, ignore_errors=True)
-        else:
-            try:
-                os.remove(path)
-            except OSError:
-                pass
+from .common import (
+    USER_AGENT,
+    chrome_cli_spec,
+    ensure_h264,
+    reset_dir,
+    ydl_cookiesfrombrowser,
+)
 
 
 def _ytdlp(url: str, workdir: str, job: dict, use_cookies: bool) -> list[str]:
@@ -42,6 +34,10 @@ def _ytdlp(url: str, workdir: str, job: dict, use_cookies: bool) -> list[str]:
         "http_headers": {"User-Agent": USER_AGENT},
         "progress_hooks": [hook],
         "merge_output_format": "mp4",
+        # Prefer h264: macOS QuickTime/Preview can't decode VP9, which Instagram
+        # serves for higher resolutions. This picks an h264 rendition whenever one
+        # exists (no transcode); the central ensure_h264 guard handles VP9-only posts.
+        "format_sort": ["vcodec:h264"],
     }
     if use_cookies:
         ydl_opts["cookiesfrombrowser"] = ydl_cookiesfrombrowser()
@@ -74,10 +70,11 @@ def run(url: str, workdir: str, job: dict, opts: dict) -> list[str]:
     # 1) yt-dlp — public reels/videos work with no login (the common case);
     #    retry with cookies for login-gated content if the first try is empty.
     for use_cookies in (False, True):
-        _reset(workdir)
+        reset_dir(workdir)
         try:
             files = _ytdlp(url, workdir, job, use_cookies)
             if files:
+                ensure_h264(files, job)  # transcode VP9/AV1 reels for Apple players
                 job["progress"] = 100
                 return files
         except Exception:
@@ -85,9 +82,10 @@ def run(url: str, workdir: str, job: dict, opts: dict) -> list[str]:
 
     # 2) gallery-dl fallback — best for multi-image carousels / when signed in.
     for with_cookies in (True, False):
-        _reset(workdir)
+        reset_dir(workdir)
         files = _gallery_dl(url, workdir, with_cookies)
         if files:
+            ensure_h264(files, job)  # transcode VP9/AV1 reels for Apple players
             job["progress"] = 100
             return files
 

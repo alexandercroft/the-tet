@@ -14,7 +14,7 @@ import sys
 import tempfile
 
 from tet import detect as detect_mod, file, instagram, telegram, threads, video
-from tet.common import OUTPUT_DIR, move_to_output
+from tet.common import OUTPUT_DIR, ensure_h264, move_to_output
 
 ENGINES = {
     "video": video.run,
@@ -42,6 +42,7 @@ def main() -> int:
         if not produced:
             print("[the-tet] nothing downloaded", file=sys.stderr)
             return 1
+        ensure_h264(produced, job)  # any non-h264 (VP9/AV1) → h264 so it plays on Apple
         final = move_to_output(workdir, args.output)
         print(f"[the-tet] {len(final)} file(s) -> {args.output}", file=sys.stderr)
         for p in final:

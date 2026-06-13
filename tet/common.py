@@ -2,6 +2,7 @@
 import os
 import re
 import shutil
+import subprocess
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -40,6 +41,53 @@ def unique_path(directory: str, filename: str) -> str:
         candidate = os.path.join(directory, f"{base} ({i}){ext}")
         i += 1
     return candidate
+
+
+def reset_dir(directory: str) -> None:
+    """Drop any partial leftovers so a failed attempt can't cause duplicates."""
+    for name in os.listdir(directory):
+        path = os.path.join(directory, name)
+        if os.path.isdir(path):
+            shutil.rmtree(path, ignore_errors=True)
+        else:
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
+
+def ensure_h264(files: list[str], job: dict) -> None:
+    """Transcode any non-h264 video to h264 in place so Apple players (QuickTime,
+    Preview, native Telegram decode) can render it. Sites like Instagram/YouTube
+    serve higher resolutions as VP9/AV1, which macOS cannot decode — audio plays
+    but the picture freezes. No-op when the video is already h264 (the common case,
+    since the yt-dlp engines prefer it via format_sort), so a transcode only fires
+    on VP9/AV1-only media. ffmpeg is already on PATH (yt-dlp uses it to merge)."""
+    for path in files:
+        if not path.lower().endswith((".mp4", ".mov", ".mkv", ".webm")):
+            continue
+        try:
+            codec = subprocess.run(
+                ["ffprobe", "-v", "error", "-select_streams", "v:0",
+                 "-show_entries", "stream=codec_name", "-of", "csv=p=0", path],
+                capture_output=True, text=True, timeout=30,
+            ).stdout.strip()
+        except Exception:
+            continue
+        if codec in ("", "h264"):
+            continue
+        job["progress"] = None  # indeterminate: transcoding
+        tmp = path + ".h264.mp4"
+        r = subprocess.run(
+            ["ffmpeg", "-y", "-i", path,
+             "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
+             "-pix_fmt", "yuv420p", "-c:a", "copy", "-movflags", "+faststart", tmp],
+            capture_output=True, text=True,
+        )
+        if r.returncode == 0 and os.path.exists(tmp) and os.path.getsize(tmp) > 0:
+            os.replace(tmp, path)  # keep the original filename
+        elif os.path.exists(tmp):
+            os.remove(tmp)
 
 
 def move_to_output(workdir: str, output_dir: str = OUTPUT_DIR) -> list[str]:
