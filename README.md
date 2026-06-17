@@ -41,7 +41,7 @@ your folder. No accounts, no ads, runs entirely on your machine.
 |--------|---------------|--------|
 | **Video** | YouTube, TikTok, X/Twitter, Vimeo, Reddit, Facebook, Twitch, Instagram **Reels**, and [1000+ other sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) | [yt-dlp](https://github.com/yt-dlp/yt-dlp) |
 | **Instagram** | Reels, posts, carousels, photos | [yt-dlp](https://github.com/yt-dlp/yt-dlp) (public reels/videos, no login) → [gallery-dl](https://github.com/mikf/gallery-dl) fallback |
-| **Threads** | Post videos and images | headless Chromium via [Playwright](https://playwright.dev/python/) |
+| **Threads** | Post videos and images | post's embedded media JSON (cookies from Chrome) |
 | **Telegram** | Media from **public** channel posts (video + photos) | built-in `t.me` embed scraper |
 | **File** | Any direct file URL — `.mp4`, `.pdf`, `.zip`, `.jpg`, … | streamed HTTP download |
 
@@ -60,7 +60,7 @@ your folder. No accounts, no ads, runs entirely on your machine.
 
 ```
                 ┌──────────────┐
-  paste URL ──▶ │  detect()    │ ──▶ threads   → Playwright (render + DOM)
+  paste URL ──▶ │  detect()    │ ──▶ threads   → post JSON (Chrome cookies)
                 │  by hostname │ ──▶ instagram → gallery-dl
                 │  + extension │ ──▶ telegram  → t.me embed scraper
                 └──────────────┘ ──▶ file      → HTTP stream
@@ -90,7 +90,7 @@ cd the-tet
 Then open **http://127.0.0.1:8900**, paste a link, and hit **EXTRACT**.
 
 `run.sh` creates a virtualenv, installs the Python dependencies, and downloads a
-Chromium build for Playwright (~150 MB, used only for Threads). Subsequent runs
+Chromium build for Playwright (~150 MB). Subsequent runs
 just start the server.
 
 ### Manual setup (instead of run.sh)
@@ -154,8 +154,8 @@ requires being signed in.
   Chrome.
 - If your session lives in a **non-default Chrome profile**, point
   `TET_CHROME_PROFILE` at it (e.g. `"Profile 1"`).
-- **Threads** public posts work via headless rendering; being logged in helps
-  with private or restricted posts.
+- **Threads** reads the post's embedded media JSON; being logged into Threads in
+  Chrome helps with private or restricted posts.
 - **Telegram** works only for **public** channels/posts (the `t.me` web preview).
 
 ## Troubleshooting
@@ -163,7 +163,7 @@ requires being signed in.
 | Symptom | Fix |
 |---------|-----|
 | Instagram private/carousel fails | Public reels/videos need no login; for private posts or photo carousels, log into Instagram in Chrome (set `TET_CHROME_PROFILE` if needed) |
-| Threads → "No media found" | The post may be private, or Chromium isn't installed (`python -m playwright install chromium`) |
+| Threads → "No media found" | The post may be private, or you're not logged into Threads in Chrome |
 | `ffmpeg not found` | `brew install ffmpeg` |
 | Video download fails | Update yt-dlp: `pip install -U yt-dlp` |
 | Wrong cookies used | Set `TET_CHROME_PROFILE` to the profile where you're logged in |
@@ -178,7 +178,7 @@ the-tet/
 │   ├── common.py       # output dir, cookies, filename/move helpers
 │   ├── video.py        # yt-dlp
 │   ├── instagram.py    # yt-dlp (public) + gallery-dl fallback
-│   ├── threads.py      # Playwright
+│   ├── threads.py      # post JSON (Chrome cookies)
 │   ├── telegram.py     # t.me embed scraper
 │   ├── file.py         # direct HTTP download
 │   └── logo.py         # inline logo (data URI)
