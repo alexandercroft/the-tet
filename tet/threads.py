@@ -140,8 +140,23 @@ def _ext_from_url(url: str, default: str) -> str:
     return m.group(1).lower() if m else default
 
 
+def _media_source(post: dict) -> dict:
+    """The node that actually carries the media.
+
+    A text post with an attached photo/video/carousel keeps it under
+    text_post_app_info.linked_inline_media — a nested post node — rather than on
+    the post node itself. So if this post carries no media of its own, drop into
+    the inline-media node before giving up.
+    """
+    if post.get("carousel_media") or _pick_image(post) or _pick_video(post):
+        return post
+    inline = (post.get("text_post_app_info") or {}).get("linked_inline_media")
+    return inline or post
+
+
 def _post_media(post: dict) -> list[tuple[str, str]]:
     """(url, ext) for EXACTLY this post — single or carousel, one file per item."""
+    post = _media_source(post)
     items = post.get("carousel_media") or [post]
     media = []
     for it in items:
