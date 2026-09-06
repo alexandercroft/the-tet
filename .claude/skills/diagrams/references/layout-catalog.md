@@ -144,9 +144,28 @@ block-beta
   D --> A
 ```
 
-For 6 steps use `columns 3` with three rows: top row `A space B`, middle row
-`F space C`, bottom row `E space D`, arrows A-B-C-D-E-F-A. For 8 steps use
-`columns 4` with all edge cells filled and the four center cells `space`.
+For 6 steps keep `columns 3` and add an empty `space space space` row
+between every row of blocks, so the vertical arrows get room:
+
+```mermaid
+block-beta
+  columns 3
+  A["Plan"] space B["Do"]
+  space space space
+  F["Reflect"] space C["Check"]
+  space space space
+  E["Share"] space D["Act"]
+  A --> B
+  B --> C
+  C --> D
+  D --> E
+  E --> F
+  F --> A
+```
+
+Without the spacer rows the rows touch and the vertical arrows disappear.
+For 8 steps use `columns 5`, fill the edge cells, and keep every inner cell
+and every second row as `space`.
 
 `block-beta` needs a recent Mermaid (verified on 11). When the renderer is unknown, use a
 state diagram. The exit is explicit and the loop is readable:
