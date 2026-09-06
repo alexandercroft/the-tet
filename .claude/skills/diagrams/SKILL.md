@@ -123,7 +123,7 @@ Full checklist with failure examples and fixes:
 | Target                                                 | Format                                                         |
 |--------------------------------------------------------|----------------------------------------------------------------|
 | Chat reply, Notion page, GitHub markdown, Obsidian     | Mermaid in a ```` ```mermaid ```` fence                           |
-| HTML artifact                                          | `<pre class="mermaid">` block, or hand-drawn inline SVG          |
+| HTML artifact                                          | `<pre class="mermaid">` block for a draft, hand-built HTML/SVG per `references/html-layouts.md` for the final look |
 | README, code comment, Telegram post, any plain text    | Box-drawing characters, see `references/ascii-diagrams.md`      |
 | FigJam board                                           | Figma MCP `generate_diagram`, same structure as the Mermaid draft |
 | Miro board                                             | Miro canvas tools, same structure as the Mermaid draft          |
@@ -134,6 +134,18 @@ renderers: `references/mermaid-cheatsheet.md`. When the renderer version is
 unknown (Notion, older wikis), avoid `-beta` diagram types and the
 `A@{ shape: ... }` syntax. Plain `flowchart`, `mindmap`, `sequenceDiagram`,
 `stateDiagram-v2` and `timeline` are safe.
+
+## HTML artifacts and the XMind habit
+
+Most diagrams for this user are delivered as HTML artifacts. Before this skill,
+every HTML diagram used one layout: root on the left, branches fanning to the
+right (XMind's "logic chart"). That is one variant of a mind map. It fits a
+topic with unordered associations on a wide screen and nothing else. In HTML,
+run Steps 1 to 4 exactly as for Mermaid, then build the chosen family with the
+matching pattern in `references/html-layouts.md`: vertical and horizontal flows,
+decision flowcharts in SVG, radial mind maps with computed polar positions,
+rings, trees, grids, real swimlanes, timelines, funnels, comparisons. Use the
+logic chart only when Step 1 says mind map and the screen is wide.
 
 ## Delivering
 
@@ -169,3 +181,7 @@ skill and its files is English.
   styling, other diagram types, renderer differences, export to image.
 - `references/ascii-diagrams.md`. Templates for plain-text diagrams in every
   direction.
+- `references/html-layouts.md`. How to build each family in an HTML artifact:
+  CSS and SVG patterns per family, the polar formula for radial and ring
+  layouts, real swimlanes with CSS grid, XMind structure names mapped to
+  families. Read it whenever the output is an HTML page.
