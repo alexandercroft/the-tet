@@ -1,6 +1,6 @@
 ---
 name: diagrams
-description: Build flowcharts, block diagrams, mind maps, process maps, decision trees, cycles, hierarchies, org charts, timelines, matrices, funnels, swimlanes, sequence and state diagrams. Picks the diagram type, direction (top-down, left-to-right, bottom-up, radial, circular, grid) and node shapes from the structure of the content instead of one default template. Use whenever the user asks for a блок-схема, схема, диаграмма, майнд-карта, ментальная карта, карта процесса, дерево решений, воронка, цикл, таймлайн, оргструктура, архитектура, mind map, flowchart, process map, decision tree, funnel, timeline, org chart, architecture diagram, or says "нарисуй", "покажи схемой", "визуализируй", "изобрази", "draw", "map out", "sketch the flow", "diagram this" — even without naming a diagram type. Also use when an answer describes a process, hierarchy, cycle, or comparison that a reader would grasp faster as a picture.
+description: Build flowcharts, block diagrams, mind maps, process maps, decision trees, cycles, hierarchies, org charts, timelines, matrices, funnels, swimlanes, sequence and state diagrams. Picks the diagram type, direction (top-down, left-to-right, bottom-up, radial, circular, grid) and node shapes from the structure of the content instead of one default template. Use whenever the user asks for a блок-схема, схема, диаграмма, майнд-карта, ментальная карта, карта процесса, дерево решений, воронка, цикл, таймлайн, оргструктура, архитектура, mind map, flowchart, process map, decision tree, funnel, timeline, org chart, architecture diagram, or says "нарисуй", "покажи схемой", "визуализируй", "изобрази", "draw", "map out", "sketch the flow", "diagram this" — even without naming a diagram type. Also load it when you are about to draw a diagram on your own initiative, so the gate in "When to draw" decides whether to draw, offer, or stay in text.
 ---
 
 # Diagrams
@@ -14,6 +14,26 @@ arrows reads as a flow. Each of these is a logic error, not a style choice.
 Every diagram goes through the five steps below. The tables in this file cover
 the common cases. The files in `references/` hold the full catalog, the full
 logic checklist, Mermaid syntax, and plain-text templates.
+
+## When to draw
+
+The skill decides how to draw. This section decides whether to draw at all.
+
+- **The user asked for a diagram.** Draw it. If the family is ambiguous
+  (the same content could be a process or a hierarchy) and the two readings
+  give different pictures, ask one short question first. Otherwise choose and
+  state the choice in one line.
+- **The user did not ask, and the content is a mechanism** that prose would
+  make the reader assemble in their head: a flow with branches, a cycle,
+  components exchanging data, a before-and-after difference. Draw it without
+  asking, once, small, next to the text it explains.
+- **The user did not ask, and the content is a list, a hierarchy of headings,
+  a set of options, or a comparison table.** Stay in text. A diagram of a
+  list is the list with boxes around it. If a picture might still help, offer
+  it in one sentence at the end and stop.
+- **Never** turn every answer into a diagram. One diagram per answer unless
+  the user asks for more. Do not redraw the same content in a second layout
+  to show variety.
 
 ## Step 1. Classify the content
 
